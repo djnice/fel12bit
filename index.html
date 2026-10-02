@@ -40,7 +40,9 @@ header { display: grid; gap: 10px; }
 .tile .who { display: flex; align-items: center; gap: 8px; font-weight: 600; }
 .key { width: 10px; height: 10px; border-radius: 50%; background: var(--c); flex: none; }
 .tile .v { font: 600 30px/1.1 var(--body); font-variant-numeric: tabular-nums; }
-.tile .v small { font-size: 15px; font-weight: 500; color: var(--muted); }
+.tile .v small { font-size: 14px; font-weight: 500; color: var(--muted); margin-left: 6px; }
+.verdict { display: grid; gap: 12px; }
+.verdict .sub { color: var(--muted); font-size: 14px; }
 .tile .d { color: var(--muted); font-size: 13px; }
 .card { background: var(--panel); border: 1px solid var(--line); border-radius: 10px; padding: 18px 18px 14px; display: grid; gap: 12px; min-width: 0; }
 .card-head { display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: baseline; justify-content: space-between; }
@@ -89,10 +91,15 @@ code { font-family: var(--mono); font-size: .92em; }
   <p class="lede">The Oppo and the S922X pass the full 12-bit FEL detail. The S928X (CoreELEC FEL composition) is limited to 10 bit and uses a fine dither to carry the rest. Is that difference visible? The chart below puts every measured error on one scale: 1.0 is the smallest difference a person with very good eyes can see under ideal conditions. Anything below 1.0 is invisible.</p>
 </header>
 
-<section class="tiles" aria-label="Largest measured error per player, relative to the visibility threshold">
-  <div class="tile" style="--c: var(--oppo)"><div class="who"><span class="key"></span>Oppo</div><div class="v">0.29<small>×</small></div><div class="d">largest gradient error, as a share of what the eye can see</div></div>
-  <div class="tile" style="--c: var(--s922)"><div class="who"><span class="key"></span>S922X</div><div class="v">0.57<small>×</small></div><div class="d">largest gradient error, as a share of what the eye can see</div></div>
-  <div class="tile" style="--c: var(--s928)"><div class="who"><span class="key"></span>S928X, 10 bit + dither</div><div class="v">0.63<small>×</small></div><div class="d">largest of its gradient error (0.52×) and dither grain (0.63×, at 1.5 m)</div></div>
+<section class="verdict" aria-labelledby="verdict-title">
+  <h2 id="verdict-title">All three are below what the eye can see</h2>
+  <p class="sub">How many times smaller the error is than the smallest visible difference, in the hardest case: a smooth, near-black gray gradient. Higher is better; above 1× the error is invisible.</p>
+  <div class="tiles">
+    <div class="tile" style="--c: var(--oppo)"><div class="who"><span class="key"></span>Oppo</div><div class="v">3.5<small>× below the limit</small></div><div class="d">typical error 0.32 of a 12-bit step · invisible</div></div>
+    <div class="tile" style="--c: var(--s928)"><div class="who"><span class="key"></span>S928X, 10 bit + dither</div><div class="v">1.9<small>× below the limit</small></div><div class="d">typical error 0.59 of a 12-bit step · invisible</div></div>
+    <div class="tile" style="--c: var(--s922)"><div class="who"><span class="key"></span>S922X</div><div class="v">1.7<small>× below the limit</small></div><div class="d">typical error 0.65 of a 12-bit step · invisible</div></div>
+  </div>
+  <p class="sub">The eye needs about 1.1 twelve-bit steps. The S928X's dither grain is also below the limit on a 65″ 4K TV: 7× at 2.5 m and 1.6× at 1.5 m.</p>
 </section>
 
 <section class="card" aria-labelledby="chart-title">
@@ -111,7 +118,7 @@ code { font-family: var(--mono); font-size: .92em; }
   </div>
   <div class="chart" id="chart"></div>
   <div class="tbl" id="table" hidden></div>
-  <p class="note">Bars left of the line cannot be seen, even in a smooth gray gradient, which is the hardest case. The grain rows assume a 65″ 4K TV.</p>
+  <p class="note">Bar length is the error, the red line is the limit of what the eye can see. A bar that reaches half way to the line is 2× below the limit. Bars that stop before the line cannot be seen, even in a smooth gray gradient, which is the hardest case. The grain rows assume a 65″ 4K TV.</p>
 </section>
 
 <section class="explain" aria-label="What the numbers mean">
