@@ -1,0 +1,224 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>P7 FEL 12-bit Gray Test</title>
+<style>body{margin:0}[hidden]{display:none!important}</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@500;600&family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;1,400&display=swap">
+<style>
+/* Layout: single measured column of a lab report; wide tables and the chart scroll inside their own boxes */
+:root {
+  --bg: #f5f7f9; --panel: #ffffff; --fg: #15202b; --muted: #586474; --line: #d8dee6;
+  --accent: #0e6a87; --oppo: #0e6a87; --s922: #b25d12; --s928: #6a4cc0; --tenbit: #8a94a1;
+  --good: #1d7a46; --warn: #a26200;
+  --display: "IBM Plex Sans Condensed", "Arial Narrow", system-ui, sans-serif;
+  --body: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, "Cascadia Mono", Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) {
+  --bg: #0e1319; --panel: #151c24; --fg: #e4eaf0; --muted: #94a1af; --line: #29333e;
+  --accent: #55b6d6; --oppo: #55b6d6; --s922: #e39a52; --s928: #a990f2; --tenbit: #7b8794;
+  --good: #5cc98a; --warn: #e2a54a; color-scheme: dark } }
+:root[data-theme="dark"] {
+  --bg: #0e1319; --panel: #151c24; --fg: #e4eaf0; --muted: #94a1af; --line: #29333e;
+  --accent: #55b6d6; --oppo: #55b6d6; --s922: #e39a52; --s928: #a990f2; --tenbit: #7b8794;
+  --good: #5cc98a; --warn: #e2a54a; color-scheme: dark }
+body { background: var(--bg); color: var(--fg); font: 15px/1.6 var(--body); }
+.wrap { max-width: 860px; margin: 0 auto; padding-inline: 20px; padding-block: 40px 64px; display: grid; gap: 34px; }
+header { display: grid; gap: 10px; border-bottom: 1px solid var(--line); padding-bottom: 24px; }
+.eyebrow { font: 500 12px/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
+h1 { font: 600 clamp(28px, 5vw, 40px)/1.1 var(--display); margin: 0; text-wrap: balance; }
+h2 { font: 600 22px/1.25 var(--display); margin: 0; text-wrap: balance; }
+h3 { font: 600 16px/1.3 var(--body); margin: 0; }
+p, ul { margin: 0; max-width: 68ch; }
+ul { padding-left: 1.2em; display: grid; gap: 6px; }
+section { display: grid; gap: 14px; min-width: 0; }
+.lede { font-size: 17px; color: var(--fg); }
+.meta { color: var(--muted); font-size: 13px; }
+code, .num { font-family: var(--mono); font-size: .92em; }
+.answer { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 18px 20px; display: grid; gap: 12px; }
+.verdicts { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 12px; }
+.verdict { border-top: 3px solid var(--c); padding-top: 10px; display: grid; gap: 4px; min-width: 0; }
+.verdict b { font: 600 15px/1.3 var(--body); }
+.verdict .big { font: 500 26px/1.1 var(--mono); color: var(--c); }
+.verdict span { color: var(--muted); font-size: 13px; }
+.tbl { overflow-x: auto; border: 1px solid var(--line); border-radius: 8px; background: var(--panel); }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+th, td { text-align: left; padding: 8px 12px; border-bottom: 1px solid var(--line); vertical-align: top; white-space: nowrap; }
+td.wrap-ok { white-space: normal; min-width: 220px; }
+th { font: 500 11.5px/1.3 var(--mono); text-transform: uppercase; letter-spacing: .05em; color: var(--muted); }
+tr:last-child td { border-bottom: 0; }
+td.n { font-family: var(--mono); }
+.dot { display: inline-block; width: 9px; height: 9px; border-radius: 50%; background: var(--c); margin-right: 7px; vertical-align: 1px; }
+.pill { font: 500 11.5px/1 var(--mono); padding: 3px 7px; border-radius: 99px; border: 1px solid currentColor; }
+.pill.good { color: var(--good); } .pill.warn { color: var(--warn); } .pill.ten { color: var(--tenbit); }
+pre { margin: 0; font: 13px/1.55 var(--mono); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 12px 14px; overflow-x: auto; }
+.chart { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 14px 12px 8px; overflow-x: auto; }
+.chart svg { display: block; min-width: 620px; width: 100%; height: auto; }
+.chart text { font-family: var(--mono); font-size: 11px; fill: var(--muted); }
+.chart .lbl { font-family: var(--body); font-size: 12.5px; font-weight: 600; fill: var(--fg); }
+.chart .sub { font-size: 10.5px; }
+.callout { border-left: 3px solid var(--accent); padding: 4px 0 4px 14px; display: grid; gap: 8px; }
+.callout h3 { color: var(--accent); }
+footer { border-top: 1px solid var(--line); padding-top: 18px; color: var(--muted); font-size: 13px; display: grid; gap: 6px; }
+a { color: var(--accent); }
+a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+@media (max-width: 520px) { .wrap { padding-inline: 16px; padding-block: 28px 48px; } body { font-size: 14.5px; } }
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<p style="margin:0;font-size:13px"><a href="index.html" style="color:var(--accent)">← Can you see the last two bits?</a></p>
+<header>
+  <div class="eyebrow">Dolby Vision profile 7 FEL · tunnel IPT 12-bit 4:2:2 · 1 Oct 2026</div>
+  <h1>P7 FEL 12-bit Gray Test</h1>
+  <p class="lede">Does the 12-bit detail of the enhancement layer (the two lowest bits) reach the output? Measured on the Oppo, the S922X and the S928X (CoreELEC FEL composition) against a known 12-bit pattern.</p>
+  <p class="meta">Two capture rounds: Oppo and S922X FEL/MEL, then S922X again (bit-identical to the first) and the S928X with and without dither. Test file: <code>P7_FEL_12bit_gray_test.mkv</code> (v2). Every pixel is an exact integer, VDR12 = 4 × BL + (EL − 512). Band A is a 12-bit ramp of 60 bars one code apart (VDR12 1600…1659). Band B is the same BL without EL (15 steps of 4 codes). Band C holds EL blocks of ±16…±255. Band D is the ramp of band A in the dark (400…459).</p>
+</header>
+
+<section class="answer">
+  <h2>Short answer</h2>
+  <div class="verdicts">
+    <div class="verdict" style="--c: var(--oppo)"><b>Oppo</b><div class="big">60 / 60</div><span>levels in band A. Full 12 bit, error at the 12-bit rounding limit.</span></div>
+    <div class="verdict" style="--c: var(--s922)"><b>S922X</b><div class="big">58 / 60</div><span>levels. 12-bit detail arrives; its own curve wobbles ±1 code.</span></div>
+    <div class="verdict" style="--c: var(--s928)"><b>S928X (dvfel, HW EL)</b><div class="big">16 → 60</div><span>HDMI: 16 codes per pixel (10-bit composition). With dither, all 60 levels arrive as averages.</span></div>
+  </div>
+  <p>The Oppo and the S922X output a 12-bit IPT tunnel, and the FEL's lowest bits reach it. On both, FEL minus MEL is exactly the EL contribution, and with MEL band A collapses to the 15 steps of band B. The S928X sends the same 12-bit tunnel through the same DV core curve as the S922X. It composes the EL correctly at 12 bit, but hands 10-bit frames to the DV core: without dither the extra bits are rounded away, with dither (the default) they arrive as the average of a fine fixed pattern.</p>
+</section>
+
+<section>
+  <h2>Error per bar against the exact value</h2>
+  <p>For gray, the IPT I channel is the PQ code itself, so the exact unrounded reference is known for every bar: I = (VDR12/4096 − 0.0625) × 1.1687 × 4095. Each row shows capture − exact for the 60 bars of band A. A 12-bit output stays within a band one code wide. A 10-bit output shows the sawtooth of 4-code steps.</p>
+  <div class="chart" id="chart" role="img" aria-label="Per-bar error of each capture against the exact reference in band A"></div>
+  <p class="meta">Dashed line: the row's mean offset. Thin lines: ±0.5 code around it, the band that rounding a 12-bit value can use.</p>
+</section>
+
+<section>
+  <h2>Why the lowest bits don't match the reference</h2>
+  <p>Each device has its own fixed-point PQ/IPT implementation, so its last bit is not expected to equal a double-precision rounding. What shows the bit depth is the spread that is left after removing a constant offset. An ideal 12-bit output can't get below 0.29 codes (1/√12). A 10-bit path, with 4.67 I codes per step, gives 1.35.</p>
+  <div class="tbl"><table>
+    <thead><tr><th>capture</th><th>band A offset</th><th>band A spread</th><th>band D offset</th><th>band D spread</th><th>reading</th></tr></thead>
+    <tbody>
+      <tr><td><span class="dot" style="--c:var(--oppo)"></span>Oppo FEL</td><td class="n">−0.58</td><td class="n"><b>0.31</b></td><td class="n">−2.32</td><td class="n"><b>0.32</b></td><td><span class="pill good">12 bit, at the limit</span></td></tr>
+      <tr><td><span class="dot" style="--c:var(--s922)"></span>S922X FEL (both rounds)</td><td class="n">−2.30</td><td class="n">0.62</td><td class="n">−3.04</td><td class="n">0.65</td><td><span class="pill warn">12-bit levels, 2× error</span></td></tr>
+      <tr><td><span class="dot" style="--c:var(--s928)"></span>S928X HDMI, dither on (bar mean)</td><td class="n">−2.18</td><td class="n">0.46</td><td class="n">−3.04</td><td class="n">0.59</td><td><span class="pill good">12 bit on average</span></td></tr>
+      <tr><td><span class="dot" style="--c:var(--s928)"></span>S928X readback, dither on (bar mean)</td><td class="n">−0.07</td><td class="n">0.20</td><td class="n">+0.02</td><td class="n">0.20</td><td><span class="pill good">no device curve</span></td></tr>
+      <tr><td><span class="dot" style="--c:var(--tenbit)"></span>Oppo MEL / S922X MEL / S928X dither off</td><td class="n">−3.95…+0.52</td><td class="n">1.33–1.44</td><td class="n">−4.79…+0.61</td><td class="n">1.33–1.47</td><td><span class="pill ten">10 bit</span></td></tr>
+    </tbody>
+  </table></div>
+  <ul>
+    <li><b>The Oppo keeps 12 bits.</b> Its spread (0.31) is the minimum a 12-bit output can have. It mostly truncates instead of rounding: 87 % of the bars in band A equal floor(exact). The others sit near a fraction of .0 or .5, where any tiny difference in the PQ curve flips the last bit. Its curve also sits about 0.5 code low in band A and 2.3 codes low in the dark band D. A constant offset moves every level together and costs no resolution: all 60 levels stay distinct and one code apart.</li>
+    <li><b>The S922X</b> has twice the 12-bit spread. This is not random noise: the same input always gives the same code, and the second-round capture is bit-identical to the first. It comes from a ±1 code wobble in the Amlogic DV core's curve, which already shows in band B, where there is no EL. Where the wobble dips, two neighbouring codes merge: bars 25/26 and 56/57 in band A, and 6/7, 27/28 and 46/47 in band D.</li>
+    <li>Every 10-bit case measures a spread of about 1.35, as the step size predicts.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Levels per band</h2>
+  <div class="tbl"><table>
+    <thead><tr><th>capture</th><th>band A (60)</th><th>band B (15)</th><th>band C (EL blocks)</th><th>band D (60)</th><th>monotonic</th></tr></thead>
+    <tbody>
+      <tr><td>reference</td><td class="n">60</td><td class="n">15</td><td>12 distinct</td><td class="n">60</td><td>yes</td></tr>
+      <tr><td><span class="dot" style="--c:var(--oppo)"></span>Oppo FEL</td><td class="n"><b>60</b></td><td class="n">15</td><td>= ref ±1</td><td class="n"><b>60</b></td><td>strictly</td></tr>
+      <tr><td><span class="dot" style="--c:var(--tenbit)"></span>Oppo MEL</td><td class="n">15</td><td class="n">15</td><td>one flat value</td><td class="n">15</td><td>yes</td></tr>
+      <tr><td><span class="dot" style="--c:var(--s922)"></span>S922X FEL</td><td class="n"><b>58</b></td><td class="n">15</td><td>= ref −1…−3</td><td class="n"><b>57</b></td><td>yes (2–3 equal pairs)</td></tr>
+      <tr><td><span class="dot" style="--c:var(--tenbit)"></span>S922X MEL</td><td class="n">15</td><td class="n">15</td><td>one flat value</td><td class="n">15</td><td>yes</td></tr>
+      <tr><td><span class="dot" style="--c:var(--s928)"></span>S928X HDMI, dither off</td><td class="n">16</td><td class="n">15</td><td>= ref 0…−4</td><td class="n">16</td><td>yes</td></tr>
+      <tr><td><span class="dot" style="--c:var(--s928)"></span>S928X HDMI, dither on (mean)</td><td class="n"><b>60</b></td><td class="n">15</td><td>= ref −1…−3</td><td class="n"><b>60</b></td><td>yes</td></tr>
+      <tr><td><span class="dot" style="--c:var(--s928)"></span>S928X readback, dither on (mean)</td><td class="n">60</td><td class="n">15, exact</td><td>= ref ±0.3</td><td class="n">60</td><td>yes</td></tr>
+    </tbody>
+  </table></div>
+  <p>On the Oppo and the S922X every bar centre is perfectly flat (min = max), and all frames are identical apart from the source's GOP refresh. Neither end of the chain adds spatial or temporal dither or noise. P/T stay neutral within a few codes and do not depend on the EL.</p>
+</section>
+
+<section>
+  <h2>FEL − MEL on the same device</h2>
+  <p>The difference between the two captures of a device is the EL alone: in both, band B of the FEL capture is bit-identical to bands A and B of the MEL capture.</p>
+<pre>reference A−B : 0 2 3 4 | 0 1 2 4 | 0 1 2 3 | 0 2 3 4 | …
+Oppo FEL−MEL  : 0 1 2 3 | 0 1 3 4 | 0 1 2 4 | 0 1 2 3 | …
+S922X FEL−MEL : 0 1 2 4 | 0 1 2 3 | 0 1 2 3 | 0 1 3 4 | …</pre>
+  <p>The staircase of d = 0, 1, 2, 3 (about 1.2 I codes per step) is there on both. In band C the EL blocks of ±16 … ±255 match the reference, down to d = +1 (2095 vs 2094).</p>
+</section>
+
+<section>
+  <h2>S928X: our composition with hardware EL decoding</h2>
+  <p>CoreELEC dv-fel-s5-20261001. The EL is decoded by the S928X's dual-layer HEVC decoder and composed on the GPU (Mali-G57). Two measurements: an HDMI tunnel capture with and without dither, which shows what leaves the box, and a readback of the compositor's output on our box, converted to IPT with the reference chain, which shows the signal before any device curve.</p>
+  <ul>
+    <li><b>The S928X sends the same 12-bit IPT tunnel as the S922X, through the same DV core curve.</b> Band B, which has no EL, is bit-identical to the S922X capture, including its offset and wobble.</li>
+    <li><b>The EL is composed correctly at 12 bit, but the composed picture is 10 bit.</b> The S5 video layer takes 10-bit frames. With dither off, each 12-bit value is rounded to the nearest 10-bit code (1600, 1601 → 400; 1602…1605 → 401), so band A has 16 levels and a 10-bit spread (1.44). This is half a step away from MEL, which drops the EL and shows the BL step.</li>
+    <li><b>With dither (the default), the 12-bit value reaches the HDMI output as an average.</b> A fixed blue-noise pattern spreads each bar over two neighbouring 10-bit codes, and the DV core passes the proportions through unchanged. Bar 1601 (400.25 in 10-bit terms) arrives as 75 % I 1568 and 25 % I 1573; bar 1602 (400.5) as 50 % / 50 %. The bar means give 60 distinct, monotonic levels in bands A and D.</li>
+    <li>The pattern is spatial only: all frames of both HDMI captures are bit-identical.</li>
+    <li>On the box, hardware and software EL decoding give the same levels. 0.2 % of the pixels differ by one code, which comes from the lossy BL of the source.</li>
+  </ul>
+</section>
+
+<section class="callout">
+  <h3>Should the S928X dither be on?</h3>
+  <p><b>Yes, for watching. It is the default. Turn it off only for measurements that need bit-exact codes.</b></p>
+  <ul>
+    <li>Without dither, every four neighbouring 12-bit values become one 10-bit code. A gradient the FEL renders in 12-bit steps comes out in 10-bit steps (HDMI band A: 16 levels, spread 1.44, like MEL).</li>
+    <li>With dither, the average over a few pixels keeps the 12-bit value, and the DV core passes it through (HDMI band A: 60 levels as means, spread 0.46). The finer gradation of the FEL survives instead of being rounded away.</li>
+    <li>The cost is a fine, fixed grain of one 10-bit step: two neighbouring codes, 5 I codes apart, on a flat area. The pattern is spatial only and every captured frame was bit-identical, so it cannot flicker. A one-step grain should not be visible at normal viewing distances.</li>
+  </ul>
+</section>
+
+<section>
+  <h2>Note on the test file</h2>
+  <p>The first version was only 0.8 MB for 30 s, because every frame is identical and the P/B frames are almost empty. It stopped after a few frames or seconds on the S922X and the S928X. That was not a decoder problem. For dual-layer DV the decoder runs in stream mode, and Kodi only starts taking pictures once the 15 MB video buffer is 90 % full. The whole file never filled it, so playback ended when the demuxer reached the end of the file. v2 appends <code>cabac_zero_words</code> to every BL picture (~15.6 Mbit/s). Decoders skip them, so the decoded pictures are bit-identical to v1, and it now plays to the end with hardware EL decoding.</p>
+</section>
+
+<footer>
+  <div>Method: every capture fully decoded (Oppo 36/32 frames, S922X 18/26 and 11 frames, S928X 10/11 frames). Measured at bar centres: the middle half in x and y, which avoids the EL upsampling edges. Bar edges sit 1 px right of the reference on both devices, so there is no shift or scaling. Reference: <code>ref_ipt</code> with the file's own RPU (YCbCr→RGB, RGB→LMS with crosstalk, PQ, LMS→IPTPQc2), full range.</div>
+  <div>Tools: <code>ref_ipt</code>, <code>ipt_compare</code>, <code>ipt_preview</code>.</div>
+</footer>
+</div>
+
+<script>
+const DATA = {"oppo-P7FEL": {"A": [1570.0, 1571.0, 1572.0, 1573.0, 1574.0, 1575.0, 1577.0, 1578.0, 1579.0, 1580.0, 1581.0, 1583.0, 1584.0, 1585.0, 1586.0, 1587.0, 1589.0, 1590.0, 1591.0, 1592.0, 1593.0, 1594.0, 1595.0, 1597.0, 1598.0, 1599.0, 1600.0, 1601.0, 1602.0, 1604.0, 1605.0, 1606.0, 1607.0, 1608.0, 1609.0, 1611.0, 1612.0, 1613.0, 1614.0, 1615.0, 1617.0, 1618.0, 1619.0, 1620.0, 1621.0, 1623.0, 1624.0, 1625.0, 1626.0, 1627.0, 1628.0, 1629.0, 1631.0, 1632.0, 1633.0, 1634.0, 1635.0, 1636.0, 1637.0, 1639.0]}, "oppo-P7MEL": {"A": [1570.0, 1570.0, 1570.0, 1570.0, 1574.0, 1574.0, 1574.0, 1574.0, 1579.0, 1579.0, 1579.0, 1579.0, 1584.0, 1584.0, 1584.0, 1584.0, 1589.0, 1589.0, 1589.0, 1589.0, 1593.0, 1593.0, 1593.0, 1593.0, 1598.0, 1598.0, 1598.0, 1598.0, 1602.0, 1602.0, 1602.0, 1602.0, 1607.0, 1607.0, 1607.0, 1607.0, 1612.0, 1612.0, 1612.0, 1612.0, 1617.0, 1617.0, 1617.0, 1617.0, 1621.0, 1621.0, 1621.0, 1621.0, 1626.0, 1626.0, 1626.0, 1626.0, 1631.0, 1631.0, 1631.0, 1631.0, 1635.0, 1635.0, 1635.0, 1635.0]}, "s922x-P7FEL": {"A": [1568.0, 1569.0, 1570.0, 1572.0, 1573.0, 1574.0, 1575.0, 1576.0, 1577.0, 1578.0, 1579.0, 1580.0, 1582.0, 1583.0, 1585.0, 1586.0, 1587.0, 1589.0, 1590.0, 1591.0, 1592.0, 1593.0, 1594.0, 1596.0, 1597.0, 1598.0, 1598.0, 1599.0, 1600.0, 1601.0, 1603.0, 1604.0, 1605.0, 1606.0, 1607.0, 1608.0, 1610.0, 1611.0, 1612.0, 1613.0, 1614.0, 1615.0, 1617.0, 1619.0, 1620.0, 1621.0, 1623.0, 1624.0, 1625.0, 1626.0, 1627.0, 1628.0, 1629.0, 1630.0, 1631.0, 1632.0, 1634.0, 1634.0, 1635.0, 1636.0]}, "c3-c3-s928x-P7FEL": {"A": [1568.0, 1569.244, 1570.497, 1571.733, 1573.0, 1573.995, 1574.997, 1575.986, 1577.0, 1578.244, 1579.497, 1580.733, 1582.0, 1583.244, 1584.497, 1585.733, 1587.0, 1588.244, 1589.497, 1590.733, 1592.0, 1593.244, 1594.497, 1595.733, 1597.0, 1597.746, 1598.498, 1599.24, 1600.0, 1601.244, 1602.497, 1603.733, 1605.0, 1606.244, 1607.497, 1608.733, 1610.0, 1610.995, 1611.997, 1612.986, 1614.0, 1615.492, 1616.996, 1618.479, 1620.0, 1621.244, 1622.497, 1623.733, 1625.0, 1625.995, 1626.997, 1627.986, 1629.0, 1630.244, 1631.497, 1632.733, 1634.0, 1635.244, 1636.497, 1637.733]}, "c3-c3-s928x-P7FEL-ditherOFF": {"A": [1568.0, 1568.0, 1573.0, 1573.0, 1573.0, 1573.0, 1577.0, 1577.0, 1577.0, 1577.0, 1582.0, 1582.0, 1582.0, 1582.0, 1587.0, 1587.0, 1587.0, 1587.0, 1592.0, 1592.0, 1592.0, 1592.0, 1597.0, 1597.0, 1597.0, 1597.0, 1600.0, 1600.0, 1600.0, 1600.0, 1605.0, 1605.0, 1605.0, 1605.0, 1610.0, 1610.0, 1610.0, 1610.0, 1614.0, 1614.0, 1614.0, 1614.0, 1620.0, 1620.0, 1620.0, 1620.0, 1625.0, 1625.0, 1625.0, 1625.0, 1629.0, 1629.0, 1629.0, 1629.0, 1634.0, 1634.0, 1634.0, 1634.0, 1639.0, 1639.0]}};
+(function () {
+  const v = Array.from({length: 60}, (_, i) => 1600 + i);
+  const exact = v.map(x => (x / 4096 - 0.0625) * 1.1687 * 4095);
+  const rows = [
+    {k: 'oppo-P7FEL', name: 'Oppo FEL', sub: '12 bit', c: '--oppo'},
+    {k: 's922x-P7FEL', name: 'S922X FEL', sub: '12-bit levels, curve wobble', c: '--s922'},
+    {k: 'c3-c3-s928x-P7FEL', name: 'S928X HDMI, dither on', sub: 'bar mean', c: '--s928'},
+    {k: 'c3-c3-s928x-P7FEL-ditherOFF', name: 'S928X HDMI, dither off', sub: '10 bit', c: '--tenbit'},
+    {k: 'oppo-P7MEL', name: 'Oppo MEL', sub: '10 bit (no EL)', c: '--tenbit'},
+  ];
+  const W = 760, L = 170, R = 14, RH = 78, TOP = 6, ymin = -5.5, ymax = 3.5;
+  const H = TOP + rows.length * RH + 26;
+  const x = i => L + (i + 0.5) * (W - L - R) / 60;
+  let s = `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg">`;
+  rows.forEach((r, ri) => {
+    const y0 = TOP + ri * RH, ph = RH - 18;
+    const y = e => y0 + (ymax - e) / (ymax - ymin) * ph;
+    const err = DATA[r.k].A.map((c, i) => c - exact[i]);
+    const mean = err.reduce((a, b) => a + b, 0) / err.length;
+    const sd = Math.sqrt(err.reduce((a, b) => a + (b - mean) ** 2, 0) / err.length);
+    s += `<rect x="${L}" y="${y(ymax)}" width="${W - L - R}" height="${ph}" fill="var(--bg)"/>`;
+    [-4, -2, 0, 2].forEach(t => {
+      s += `<line x1="${L}" x2="${W - R}" y1="${y(t)}" y2="${y(t)}" stroke="var(--line)" stroke-width="${t === 0 ? 1.2 : 0.7}"/>`;
+      s += `<text x="${L - 6}" y="${y(t) + 3.5}" text-anchor="end">${t > 0 ? '+' + t : t}</text>`;
+    });
+    s += `<rect x="${L}" y="${y(mean + 0.5)}" width="${W - L - R}" height="${y(mean - 0.5) - y(mean + 0.5)}" fill="var(${r.c})" fill-opacity="0.10"/>`;
+    s += `<line x1="${L}" x2="${W - R}" y1="${y(mean)}" y2="${y(mean)}" stroke="var(${r.c})" stroke-dasharray="4 3" stroke-width="1"/>`;
+    s += `<polyline fill="none" stroke="var(${r.c})" stroke-width="1.6" stroke-linejoin="round" points="${err.map((e, i) => x(i) + ',' + y(e).toFixed(1)).join(' ')}"/>`;
+    err.forEach((e, i) => { s += `<circle cx="${x(i)}" cy="${y(e).toFixed(1)}" r="2.2" fill="var(${r.c})"/>`; });
+    s += `<text class="lbl" x="0" y="${y0 + 20}">${r.name}</text>`;
+    s += `<text class="sub" x="0" y="${y0 + 36}">${r.sub}</text>`;
+    s += `<text class="sub" x="0" y="${y0 + 51}">offset ${mean >= 0 ? '+' : '−'}${Math.abs(mean).toFixed(2)} · spread ${sd.toFixed(2)}</text>`;
+  });
+  const yb = TOP + rows.length * RH;
+  [0, 15, 30, 45, 59].forEach(i => { s += `<text x="${x(i)}" y="${yb + 2}" text-anchor="middle">${v[i]}</text>`; });
+  s += `<text x="${(L + W - R) / 2}" y="${yb + 18}" text-anchor="middle">band A bar, VDR12 input code · y: capture − exact, in 12-bit I codes</text>`;
+  s += `</svg>`;
+  document.getElementById('chart').innerHTML = s;
+})();
+</script>
+
+</body>
+</html>
